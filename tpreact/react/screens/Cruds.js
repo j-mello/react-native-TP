@@ -1,7 +1,7 @@
 import React from 'react';
 import {Text} from 'react-native';
+import AddCrud from '../components/Cruds/AddCrud';
 import CrudList from '../components/Cruds/CrudList';
-import AddCrud from "../components/Cruds/AddCrud";
 
 export default function Cruds() {
   return (
