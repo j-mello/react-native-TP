@@ -17,9 +17,8 @@ export default function AddCrud() {
   const {addItem} = useContext(CrudContext);
   const [visible, setVisible] = useState(false);
   const [values, setValues] = useState({
-    tempmax: 0,
-    tempmin: 0,
-    description: '',
+    name: '',
+    type: '',
   });
 
   const handleChange = useCallback(
@@ -41,22 +40,17 @@ export default function AddCrud() {
         onPress={() => setVisible(true)}
       />
       <Dialog visible={visible} onDismiss={() => setVisible(false)}>
-        <Dialog.Title>Add Weather</Dialog.Title>
+        <Dialog.Title>Add List</Dialog.Title>
         <Dialog.Content>
           <TextInput
-            label="tempmax"
-            value={values.tempmax.toString()}
-            onChangeText={handleChange('tempmax', 'integer')}
+            label="name"
+            value={values.name}
+            onChangeText={handleChange('name', 'string')}
           />
           <TextInput
-            label="tempmin"
-            value={values.tempmin.toString()}
-            onChangeText={handleChange('tempmin', 'integer')}
-          />
-          <TextInput
-            label="description"
-            value={values.description}
-            onChangeText={handleChange('description')}
+            label="type"
+            value={values.type}
+            onChangeText={handleChange('type', 'string')}
           />
         </Dialog.Content>
         <Dialog.Actions>

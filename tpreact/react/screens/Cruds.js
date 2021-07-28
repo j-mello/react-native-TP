@@ -6,6 +6,7 @@ export default function Cruds() {
   return (
     <>
         <Text>Liste des cruds</Text>
+        <AddCrud />
         <CrudList />
     </>
   );
