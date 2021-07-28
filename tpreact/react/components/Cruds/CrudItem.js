@@ -11,7 +11,7 @@ export default function CrudItem({item}) {
       right={() => (
           <>
             <IconButton icon="delete" size={20} onPress={() => deleteCrud(item)} />
-            <IconButton icon="camera" size={20} onPress={() => setSelectedCrud(item)}/>
+            <IconButton icon="magnify" size={20} onPress={() => setSelectedCrud(item)}/>
           </>
       )}
     />
