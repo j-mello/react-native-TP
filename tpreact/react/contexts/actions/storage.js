@@ -1,25 +1,55 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export function getCodes() {
-    return AsyncStorage.getItem('codes').then(data => JSON.parse(data || '[]'));
+export function getCruds(models) {
+    return AsyncStorage.getItem('cruds').then(data =>
+    data ? JSON.parse(data).map(crud =>
+        ({
+            ...crud,
+            list: crud.list.map(subItem =>
+                Object.keys(subItem).reduce((acc,key) => ({
+                    ...acc, [key]: (models[crud.type][key] && models[crud.type][key].type === "date") ? new Date(subItem[key]) : subItem[key],
+                }), {})
+            )
+        })
+    ) : null);
 }
 
-export async function editCode(item) {
-    let data = JSON.parse((await AsyncStorage.getItem('codes')) || '[]');
-    data = data.map(_it => (_it._id !== item._id ? _it : item));
-    await AsyncStorage.setItem('codes', JSON.stringify(data));
-    return item;
+export async function addSubItemCruds(cruds,selectedCrudId,subItem) {
+    await AsyncStorage.setItem('cruds', JSON.stringify(cruds.map(crud =>
+        crud.id === selectedCrudId ?
+            {
+                ...crud,
+                list: [...crud.list, {...subItem, id: crud.list.length+1}]
+            } : crud
+    )));
 }
 
-export async function addCode(item) {
-    let data = JSON.parse((await AsyncStorage.getItem('codes')) || '[]');
-    data = [...data, {_id: Date.now(), ...item}];
-    await AsyncStorage.setItem('codes', JSON.stringify(data));
-    return item;
+export async function deleteSubItemCruds(cruds,selectedCrudId,subItemToDelete) {
+    await AsyncStorage.setItem('cruds', JSON.stringify(cruds.map(crud =>
+        crud.id === selectedCrudId ?
+            {
+                ...crud,
+                list: crud.list.filter(subItem =>
+                    subItem.id !== subItemToDelete.id
+                )
+            } : crud
+    )))
 }
-export async function deleteCode(item) {
-    let data = JSON.parse((await AsyncStorage.getItem('codes')) || '[]');
-    data = data.filter(_it => _it._id !== item._id);
-    await AsyncStorage.setItem('codes', JSON.stringify(data));
-    return true;
+
+export async function completeSubItemCruds(cruds,selectedCrudId,subItemToComplete) {
+    await AsyncStorage.setItem('cruds', JSON.stringify(cruds.map(crud =>
+        crud.id !== selectedCrudId ?
+            crud :
+            {
+                ...crud,
+                list: crud.list.map(subItem =>
+                    subItem.id !== subItemToComplete.id ?
+                        subItem :
+                        {...subItem, completed: true})
+            }
+    )))
+}
+
+export async function clear() {
+    await AsyncStorage.clean();
 }

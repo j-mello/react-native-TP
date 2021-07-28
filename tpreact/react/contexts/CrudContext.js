@@ -1,5 +1,5 @@
 import React, {createContext, useState, useEffect, useCallback} from 'react';
-import {sub} from "react-native-reanimated";
+import {clear, getCruds, addSubItemCruds, deleteSubItemCruds, completeSubItemCruds} from "./actions/storage";
 
 export const CrudContext = createContext();
 
@@ -26,34 +26,30 @@ const models = { // Définition des types de crud
     }
 }
 
-const crudTypes = Object.keys(models);
+const defaultCruds = [ // Exemple de liste de cruds
+    {
+        id: 51681,
+        type: 'task',
+        name: 'Ma liste de tache N°1',
+        list: [
+            {id: 1, name: 'Faire les pates', completed: true, date: new Date(), geo: "Géolocalisation du tel"},
+            {id: 2, name: 'Finir cette année', completed: false, date: new Date(), geo: "zeouifhiuzefh"}
+        ]
+    },
+    {
+        id: 87941,
+        type: 'purchase',
+        name: 'Mes achats',
+        list: [
+            {id: 1, name: "Aspirateur", completed: true},
+            {id: 2, name: "The Elder Scroll VI", completed: false}
+        ]
+    }
+]
 
 export default function CrudProvider({children}) {
     const [cruds, setCruds] = useState([]);
     const [selectedCrud, setSelectedCrud] = useState(null);
-
-    useEffect(() => [
-        setCruds([ // Exemple de liste de cruds
-            {
-                id: 51681,
-                type: 'task',
-                name: 'Ma liste de tache N°1',
-                list: [
-                    {id: 1, name: 'Faire les pates', completed: true, date: new Date(), geo: "Géolocalisation du tel"},
-                    {id: 2, name: 'Finir cette année', completed: false, date: new Date(), geo: "zeouifhiuzefh"}
-                ]
-            },
-            {
-                id: 87941,
-                type: 'purchase',
-                name: 'Mes achats',
-                list: [
-                    {id: 1, name: "Aspirateur", completed: true},
-                    {id: 2, name: "The Elder Scroll VI", completed: false}
-                ]
-            }
-        ])
-    ], [])
 
     const deleteCrud = useCallback(
         (crudToDelete) => setCruds(cruds.filter(crud => crud.id !== crudToDelete.id)),
@@ -62,56 +58,64 @@ export default function CrudProvider({children}) {
 
     const deleteCrudSubItem = useCallback(
         (subItemToDelete) =>
-            setSelectedCrud({
-                ...selectedCrud,
-                list: selectedCrud.list.filter(subItem => subItem.id !== subItemToDelete.id)
-            }) |
-            setCruds(cruds.map(crud =>
-                crud.id === selectedCrud.id ?
-                    {
-                        ...crud,
-                        list: crud.list.filter(subItem =>
-                            subItem.id !== subItemToDelete.id
-                        )
-                    } : crud
-            )),
+            deleteSubItemCruds(cruds,selectedCrud.id,subItemToDelete).then(() =>
+                setSelectedCrud({
+                    ...selectedCrud,
+                    list: selectedCrud.list.filter(subItem => subItem.id !== subItemToDelete.id)
+                }) |
+                setCruds(cruds.map(crud =>
+                    crud.id === selectedCrud.id ?
+                        {
+                            ...crud,
+                            list: crud.list.filter(subItem =>
+                                subItem.id !== subItemToDelete.id
+                            )
+                        } : crud
+                ))
+            ),
         [selectedCrud, cruds]
     )
 
     const addSubItem = useCallback(
-        (subItem) => setSelectedCrud({
-            ...selectedCrud,
-            list: [...selectedCrud.list, {...subItem, id: selectedCrud.list.length+1}]
-        }) |
-            setCruds(cruds.map(crud =>
-                crud.id === selectedCrud.id ?
-                    {
-                        ...selectedCrud,
-                        list: [...selectedCrud.list, {...subItem, id: selectedCrud.list.length+1}]
-                    } : {...crud}
-            ))
+        (subItem) =>
+            addSubItemCruds(cruds,selectedCrud.id,subItem).then(() =>
+                setSelectedCrud({
+                    ...selectedCrud,
+                    list: [...selectedCrud.list, {...subItem, id: selectedCrud.list.length+1}]
+                }) |
+                setCruds(cruds.map(crud =>
+                    crud.id === selectedCrud.id ?
+                        {
+                            ...selectedCrud,
+                            list: [...selectedCrud.list, {...subItem, id: selectedCrud.list.length+1}]
+                        } : {...crud}
+                ))
+            )
         ,
         [selectedCrud,cruds]
     )
 
     const completeSubItem = useCallback(
-        (subItemToComplete) => setSelectedCrud({
-            ...selectedCrud,
-            list: selectedCrud.list.map(subItem =>
-                subItem.id !== subItemToComplete.id ?
-                    subItem :
-                    {...subItem, completed: true})
-        }) | setCruds(cruds.map(crud =>
-                crud.id !== selectedCrud.id ?
-                    crud :
-                    {
-                        ...crud,
-                        list: crud.list.map(subItem =>
-                            subItem.id !== subItemToComplete.id ?
-                                subItem :
-                                {...subItem, completed: true})
-                    }
-            ))
+        (subItemToComplete) =>
+            completeSubItemCruds(cruds,selectedCrud.id,subItemToComplete).then(() =>
+                setSelectedCrud({
+                    ...selectedCrud,
+                    list: selectedCrud.list.map(subItem =>
+                        subItem.id !== subItemToComplete.id ?
+                            subItem :
+                            {...subItem, completed: true})
+                }) | setCruds(cruds.map(crud =>
+                    crud.id !== selectedCrud.id ?
+                        crud :
+                        {
+                            ...crud,
+                            list: crud.list.map(subItem =>
+                                subItem.id !== subItemToComplete.id ?
+                                    subItem :
+                                    {...subItem, completed: true})
+                        }
+                ))
+            )
     )
 
     const showSubItemField = useCallback(
