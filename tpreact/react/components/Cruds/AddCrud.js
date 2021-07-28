@@ -1,7 +1,7 @@
 import React, {useCallback, useContext, useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {Button, Dialog, FAB, Portal, TextInput} from 'react-native-paper';
-import {WeatherContext} from '../../contexts/WeatherContext';
+import {CrudContext} from '../../contexts/CrudContext';
 
 const styles = StyleSheet.create({
   fab: {
@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function AddWeather() {
-  const {addItem} = useContext(WeatherContext);
+export default function AddCrud() {
+  const {addItem} = useContext(CrudContext);
   const [visible, setVisible] = useState(false);
   const [values, setValues] = useState({
     tempmax: 0,
