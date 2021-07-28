@@ -2,11 +2,21 @@ import React, {createContext, useState, useEffect, useCallback} from 'react';
 
 export const CrudContext = createContext();
 
+const addMissingZeros = (number,n = 2) => {
+  if (typeof(number) == "number")
+    number = number.toString();
+
+  while (number.length < n) {
+    number = '0'+number;
+  }
+  return number;
+}
+
 const models = { // Définition des types de crud
   task: {
-    name: {label: 'Le nom :', type: 'string'},
-    completed: {label: 'Complété :', type: 'boolean'},
-    date: {label: 'La date: ', type: 'date'},
+    name: {label: 'Le nom', type: 'string'},
+    completed: {label: 'Complété', type: 'boolean'},
+    date: {label: 'La date', type: 'date'},
     geo:  {label: 'La géolocalisation', type: 'geo'}
   },
   purchase: {
@@ -19,6 +29,7 @@ const crudTypes = Object.keys(models);
 
 export default function CrudProvider({children}) {
   const [cruds, setCruds] = useState([]);
+  const [selectedCrud, setSelectedCrud] = useState(null);
 
   useEffect(() => [
       setCruds([ // Exemple de liste de cruds
@@ -46,6 +57,25 @@ export default function CrudProvider({children}) {
   const deleteCrud = useCallback(
       (crudToDelete) => setCruds(cruds.filter(crud => crud.id !== crudToDelete.id)),
       [cruds]
+  )
+
+  const showSubItemField = useCallback(
+      (value,model) => {
+        switch (model.type) {
+          case 'string':
+            return value
+          case 'boolean':
+            return model.label+" : "+(value ? 'OUI' : 'NON')
+          case 'date':
+            return addMissingZeros(value.getDate())+"/"
+                  +addMissingZeros(value.getMonth()+1)+"/"
+                  +addMissingZeros(value.getFullYear())
+          case 'geo':
+            return 'GEO'
+        }
+        return 'Unkown type';
+      },
+      []
   )
 
   //useEffect(() => fetchItems(1).then(() => setReady(true)), []);
@@ -83,7 +113,13 @@ export default function CrudProvider({children}) {
     <CrudContext.Provider
       value={{
         cruds,
-        deleteCrud
+        deleteCrud,
+        models,
+
+        selectedCrud,
+        setSelectedCrud,
+
+        showSubItemField
       }}>
       {children}
     </CrudContext.Provider>
