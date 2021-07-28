@@ -4,7 +4,7 @@ import {CrudContext} from '../../contexts/CrudContext';
 
 export default function SublistItem({item}) {
     //const {deleteCrud,setSelectedCrud} = useContext(CrudContext);
-    const {selectedCrud, models, showSubItemField, deleteCrudSubItem} = useContext(CrudContext);
+    const {selectedCrud, models, showSubItemField, deleteCrudSubItem, completeSubItem} = useContext(CrudContext);
 
     return (
         <List.Item
@@ -16,7 +16,11 @@ export default function SublistItem({item}) {
             }
             right={() => (
                 <>
-                  <IconButton icon="delete" size={20} onPress={() => deleteCrudSubItem(item)} />
+                    {
+                        !item.completed &&
+                        <IconButton icon="check" size={20} onPress={() => completeSubItem(item)}/>
+                    }
+                    <IconButton icon="delete" size={20} onPress={() => deleteCrudSubItem(item)} />
                 </>
             )}
         />

@@ -1,4 +1,5 @@
 import React, {createContext, useState, useEffect, useCallback} from 'react';
+import {sub} from "react-native-reanimated";
 
 export const CrudContext = createContext();
 
@@ -93,6 +94,26 @@ export default function CrudProvider({children}) {
         [selectedCrud,cruds]
     )
 
+    const completeSubItem = useCallback(
+        (subItemToComplete) => setSelectedCrud({
+            ...selectedCrud,
+            list: selectedCrud.list.map(subItem =>
+                subItem.id !== subItemToComplete.id ?
+                    subItem :
+                    {...subItem, completed: true})
+        }) | setCruds(cruds.map(crud =>
+                crud.id !== selectedCrud.id ?
+                    crud :
+                    {
+                        ...crud,
+                        list: crud.list.map(subItem =>
+                            subItem.id !== subItemToComplete.id ?
+                                subItem :
+                                {...subItem, completed: true})
+                    }
+            ))
+    )
+
     const showSubItemField = useCallback(
         (value, model) => {
             switch (model.type) {
@@ -176,6 +197,7 @@ export default function CrudProvider({children}) {
 
                 deleteCrudSubItem,
                 addSubItem,
+                completeSubItem,
 
                 showSubItemField,
                 getDefaultValueByType
