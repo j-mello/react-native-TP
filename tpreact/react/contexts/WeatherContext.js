@@ -1,10 +1,4 @@
 import React, {createContext, useState, useEffect, useCallback} from 'react';
-import {
-  addWeather,
-  editWeather,
-  deleteWeather,
-  getWeathers,
-} from './actions/weather';
 
 export const WeatherContext = createContext();
 
@@ -16,7 +10,7 @@ export default function WeatherProvider({children}) {
 
   useEffect(() => fetchItems(1).then(() => setReady(true)), []);
 
-  const fetchItems = useCallback(nextPage => {
+  /*const fetchItems = useCallback(nextPage => {
     setLoading(true);
     return getWeathers(nextPage).then(
       data =>
@@ -43,12 +37,12 @@ export default function WeatherProvider({children}) {
     [list],
   );
 
-  const getItem = useCallback(id => list.find(it => it._id === id), [list]);
+  const getItem = useCallback(id => list.find(it => it._id === id), [list]);*/
 
   return (
     <WeatherContext.Provider
       value={{
-        list,
+        /*list,
         ready,
         loading,
         getItem,
@@ -56,7 +50,7 @@ export default function WeatherProvider({children}) {
         deleteItem,
         editItem,
         addItem,
-        page,
+        page,*/
       }}>
       {children}
     </WeatherContext.Provider>
