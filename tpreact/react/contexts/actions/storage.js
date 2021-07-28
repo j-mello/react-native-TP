@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {newId} from "../../lib/utils";
 
 export function getCruds(models) {
     return AsyncStorage.getItem('cruds').then(data =>
@@ -15,13 +16,15 @@ export function getCruds(models) {
 }
 
 export async function addSubItemCruds(cruds,selectedCrudId,subItem) {
+    let id;
     await AsyncStorage.setItem('cruds', JSON.stringify(cruds.map(crud =>
         crud.id === selectedCrudId ?
             {
                 ...crud,
-                list: [...crud.list, {...subItem, id: crud.list.length+1}]
+                list: [...crud.list, {...subItem, id: (id = newId(crud))}]
             } : crud
     )));
+    return id;
 }
 
 export async function deleteSubItemCruds(cruds,selectedCrudId,subItemToDelete) {

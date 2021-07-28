@@ -1,17 +1,8 @@
 import React, {createContext, useState, useEffect, useCallback} from 'react';
-import {clear, getCruds, addSubItemCruds, deleteSubItemCruds, completeSubItemCruds} from "./actions/storage";
+import {getCruds, addSubItemCruds, deleteSubItemCruds, completeSubItemCruds} from "./actions/storage";
+import {formatDateFr} from "../lib/utils";
 
 export const CrudContext = createContext();
-
-const addMissingZeros = (number, n = 2) => {
-    if (typeof (number) == "number")
-        number = number.toString();
-
-    while (number.length < n) {
-        number = '0' + number;
-    }
-    return number;
-}
 
 const models = { // Définition des types de crud
     task: {
@@ -51,6 +42,10 @@ export default function CrudProvider({children}) {
     const [cruds, setCruds] = useState([]);
     const [selectedCrud, setSelectedCrud] = useState(null);
 
+    useEffect(async () => {
+        getCruds(models).then(cruds => setCruds(cruds ?? defaultCruds))
+    }, []);
+
     const deleteCrud = useCallback(
         (crudToDelete) => setCruds(cruds.filter(crud => crud.id !== crudToDelete.id)),
         [cruds]
@@ -78,16 +73,16 @@ export default function CrudProvider({children}) {
 
     const addSubItem = useCallback(
         (subItem) =>
-            addSubItemCruds(cruds,selectedCrud.id,subItem).then(() =>
+            addSubItemCruds(cruds,selectedCrud.id,subItem).then((id) =>
                 setSelectedCrud({
                     ...selectedCrud,
-                    list: [...selectedCrud.list, {...subItem, id: selectedCrud.list.length+1}]
+                    list: [...selectedCrud.list, {...subItem, id}]
                 }) |
                 setCruds(cruds.map(crud =>
                     crud.id === selectedCrud.id ?
                         {
                             ...selectedCrud,
-                            list: [...selectedCrud.list, {...subItem, id: selectedCrud.list.length+1}]
+                            list: [...selectedCrud.list, {...subItem, id}]
                         } : {...crud}
                 ))
             )
@@ -128,9 +123,7 @@ export default function CrudProvider({children}) {
                 case 'boolean':
                     return model.label + " : " + (value ? 'OUI' : 'NON');
                 case 'date':
-                    return addMissingZeros(value.getDate()) + "/"
-                        + addMissingZeros(value.getMonth() + 1) + "/"
-                        + addMissingZeros(value.getFullYear());
+                    return formatDateFr(value);
                 case 'geo':
                     return 'GEO';
             }
