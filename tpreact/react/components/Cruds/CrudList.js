@@ -12,10 +12,6 @@ export default function CrudList() {
       keyExtractor={item => item.id}
       renderItem={({item}) => <CrudItem item={item}/>}
       ListEmptyComponent={() => <Text>Pas de liste trouvée</Text>}
-      /*onRefresh={() => fetchItems(1)}
-      refreshing={!ready || loading}
-      onEndReached={() => fetchItems(page + 1)}
-      onEndReachedThreshold={0.7} */
     />
   );
 }

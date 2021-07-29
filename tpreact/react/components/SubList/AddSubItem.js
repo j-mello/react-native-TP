@@ -1,10 +1,10 @@
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useContext, useState, useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 import {Button, Dialog, FAB, Portal, TextInput} from 'react-native-paper';
 import {CrudContext} from '../../contexts/CrudContext';
 import Pressable from "react-native/Libraries/Components/Pressable/Pressable";
 import {Calendar} from 'react-native-calendars';
-import {formatDateEn} from "../../lib/utils";
+import {asyncReduce, formatDateEn} from "../../lib/utils";
 
 const styles = StyleSheet.create({
   fab: {
@@ -19,14 +19,15 @@ const styles = StyleSheet.create({
 export default function AddSubItem() {
   const {models,selectedCrud,getDefaultValueByType,addSubItem,showSubItemField} = useContext(CrudContext);
   const [visible, setVisible] = useState(false);
-  const [values, setValues] = useState(Object.keys(models[selectedCrud.type]).reduce((acc,field) =>
-          ({
-            ...acc,
-            [field]: getDefaultValueByType(models[selectedCrud.type][field].type)
-          })
-      , {}
-  ));
+  const [values, setValues] = useState({});
   const [fieldDate,setFieldDate] = useState(null);
+
+  useEffect(() => asyncReduce(Object.keys(models[selectedCrud.type]),async (acc,field) =>
+          ({
+              ...acc,
+              [field]: await getDefaultValueByType(models[selectedCrud.type][field].type)
+          })
+      , {}).then(res => setValues(res)), [])
 
   const handleChange = useCallback(
     (name, type = 'string') =>
@@ -35,7 +36,7 @@ export default function AddSubItem() {
           ...values,
           [name]: value !== '' && type === 'number' ? parseInt(value) : value,
         }),
-    [],
+    [values],
   );
 
   return (
@@ -51,7 +52,7 @@ export default function AddSubItem() {
         <Dialog.Content>
           {
             Object.keys(models[selectedCrud.type]).map(field =>
-                [undefined,true].includes(models[selectedCrud.type][field].displayOnCreate) &&
+                (values[field] !== undefined && [undefined,true].includes(models[selectedCrud.type][field].displayOnCreate)) &&
                 <Pressable key={field} onPress={
                     () => models[selectedCrud.type][field].type === "date" &&
                         (
@@ -61,7 +62,7 @@ export default function AddSubItem() {
                         label={models[selectedCrud.type][field].label}
                         value={showSubItemField(values[field],models[selectedCrud.type][field])}
                         onChangeText={handleChange(field, models[selectedCrud.type][field].type)}
-                        editable={models[selectedCrud.type][field].type !== 'date'}
+                        editable={!['date','geo'].includes(models[selectedCrud.type][field].type)}
                     />
                 </Pressable>
             )

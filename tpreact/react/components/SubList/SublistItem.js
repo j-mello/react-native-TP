@@ -3,9 +3,7 @@ import {List, IconButton} from 'react-native-paper';
 import {CrudContext} from '../../contexts/CrudContext';
 
 export default function SublistItem({item}) {
-    //const {deleteCrud,setSelectedCrud} = useContext(CrudContext);
     const {selectedCrud, models, showSubItemField, deleteCrudSubItem, completeSubItem} = useContext(CrudContext);
-
     return (
         <List.Item
             title={item.name}

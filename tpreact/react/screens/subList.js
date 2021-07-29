@@ -7,7 +7,7 @@ import { IconButton } from 'react-native-paper';
 
 
 export default function Sublist() {
-  const {selectedCrud,setSelectedCrud} = useContext(CrudContext);
+  const {selectedCrud,setSelectedCrud,modelsLabels} = useContext(CrudContext);
 
   return (
     <>
@@ -16,7 +16,7 @@ export default function Sublist() {
           size={20}
           onPress={() => setSelectedCrud(null)}
         />
-        <Text>Liste des éléments de {selectedCrud.name} ({selectedCrud.type})</Text>
+        <Text>Liste des éléments de {selectedCrud.name} ({modelsLabels[selectedCrud.type]})</Text>
         <AddSubItem/>
         <ItemList />
     </>

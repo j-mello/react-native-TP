@@ -23,3 +23,10 @@ export const newId = list => {
     }
     return id;
 }
+
+export const asyncReduce = async (list,callback,acc) => {
+    for (let elem of list) {
+        acc = await callback(acc,elem);
+    }
+    return acc;
+}
