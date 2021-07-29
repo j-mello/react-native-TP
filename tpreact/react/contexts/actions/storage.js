@@ -6,11 +6,11 @@ export function getCruds(models) {
     data ? JSON.parse(data).map(crud =>
         ({
             ...crud,
-            list: crud.list.map(subItem =>
+            list: crud.list ? crud.list.map(subItem =>
                 Object.keys(subItem).reduce((acc,key) => ({
                     ...acc, [key]: (models[crud.type][key] && models[crud.type][key].type === "date") ? new Date(subItem[key]) : subItem[key],
                 }), {})
-            )
+            ) : []
         })
     ) : null);
 }
@@ -21,7 +21,7 @@ export async function addSubItemCruds(cruds,selectedCrudId,subItem) {
         crud.id === selectedCrudId ?
             {
                 ...crud,
-                list: [...crud.list, {...subItem, id: (id = newId(crud))}]
+                list: [...crud.list, {...subItem, id: (id = newId(crud.list))}]
             } : crud
     )));
     return id;
@@ -51,6 +51,26 @@ export async function completeSubItemCruds(cruds,selectedCrudId,subItemToComplet
                         {...subItem, completed: true})
             }
     )))
+}
+
+export async function addCrud(cruds, values) {
+    let id;
+    await AsyncStorage.setItem('cruds', JSON.stringify([
+        ...cruds,
+        {
+            ...values,
+            id: (id = newId(cruds))
+        }
+    ]))
+    return id;
+}
+
+export async function deleteCrud(cruds, id) {
+    await AsyncStorage.setItem('cruds', JSON.stringify(
+        cruds.filter((crud) =>
+            crud.id != id
+        )
+    ))
 }
 
 export async function clear() {

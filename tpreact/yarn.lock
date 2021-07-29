@@ -5358,11 +5358,6 @@ react-native-iphone-x-helper@^1.3.1:
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
   integrity sha512-HOf0jzRnq2/aFUcdCJ9w9JGzN3gdEg0zFE4FyYlp4jtidqU03D5X7ZegGKfT1EWteR0gPBGp9ye5T5FvSWi9Yg==
 
-react-native-neat-date-picker@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/react-native-neat-date-picker/-/react-native-neat-date-picker-1.0.6.tgz#300c8e9c5c8875678cc7a0be6a256ac5121bd6e4"
-  integrity sha512-nxH3fzyiOiFRBlLJY7NZsMugNsAofN95pz1UDiXgBz8O8gXQEAlkh4tSu9ccM4fR7w4zfN+mNl6rzNw6X3XVIQ==
-
 react-native-paper@^4.9.2:
   version "4.9.2"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-4.9.2.tgz#6ecdd81acf2cf4d6d5f0247d4c1812dea93eade0"

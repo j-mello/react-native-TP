@@ -1,5 +1,5 @@
 import React, {createContext, useState, useEffect, useCallback} from 'react';
-import {getCruds, addSubItemCruds, deleteSubItemCruds, completeSubItemCruds} from "./actions/storage";
+import {getCruds, addSubItemCruds, deleteSubItemCruds, completeSubItemCruds, addCrud, deleteCrud} from "./actions/storage";
 import {formatDateFr} from "../lib/utils";
 
 export const CrudContext = createContext();
@@ -15,6 +15,11 @@ const models = { // Définition des types de crud
         name: {label: 'Le nom', type: 'string'},
         completed: {label: 'Complété', type: 'boolean', displayOnCreate: false}
     }
+}
+
+const modelsLabels = {
+    task: "Liste de tâches",
+    purchase: "Liste d'achâts"
 }
 
 const defaultCruds = [ // Exemple de liste de cruds
@@ -46,11 +51,6 @@ export default function CrudProvider({children}) {
         getCruds(models).then(cruds => setCruds(cruds ?? defaultCruds))
     }, []);
 
-    const deleteCrud = useCallback(
-        (crudToDelete) => setCruds(cruds.filter(crud => crud.id !== crudToDelete.id)),
-        [cruds]
-    )
-
     const deleteCrudSubItem = useCallback(
         (subItemToDelete) =>
             deleteSubItemCruds(cruds,selectedCrud.id,subItemToDelete).then(() =>
@@ -69,6 +69,29 @@ export default function CrudProvider({children}) {
                 ))
             ),
         [selectedCrud, cruds]
+    )
+
+    const addMainList = useCallback(
+        (values) => 
+            addCrud(cruds, values).then((id) =>
+            setCruds([
+                ...cruds,
+                {
+                    ...values,
+                    id,
+                    list: []
+                }
+            ])
+            )
+        ,
+        [cruds],
+    )
+
+    const deleteMainList = useCallback(
+        (crudToDelete) => deleteCrud(cruds, crudToDelete.id).then(() =>
+            setCruds(cruds.filter(crud => crud.id !== crudToDelete.id))
+        ),
+        [cruds]
     )
 
     const addSubItem = useCallback(
@@ -186,13 +209,15 @@ export default function CrudProvider({children}) {
         <CrudContext.Provider
             value={{
                 cruds,
-                deleteCrud,
                 models,
+                modelsLabels,
 
                 selectedCrud,
                 setSelectedCrud,
 
                 deleteCrudSubItem,
+                addMainList,
+                deleteMainList,
                 addSubItem,
                 completeSubItem,
 

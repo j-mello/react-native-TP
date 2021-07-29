@@ -11,7 +11,7 @@ export default function ItemList() {
       data={selectedCrud.list}
       keyExtractor={item => item.id}
       renderItem={({item}) => <SublistItem item={item}/>}
-      ListEmptyComponent={() => <Text>no data found</Text>}
+      ListEmptyComponent={() => <Text>Liste vide</Text>}
       /*onRefresh={() => fetchItems(1)}
       refreshing={!ready || loading}
       onEndReached={() => fetchItems(page + 1)}

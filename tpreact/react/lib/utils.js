@@ -16,9 +16,9 @@ export const formatDateFr = (date) => {
     return addMissingZeros(date.getDate())+"/"+addMissingZeros(date.getMonth() + 1)+"/"+addMissingZeros(date.getFullYear());
 }
 
-export const newId = crud => {
+export const newId = list => {
     let id = 1;
-    while (crud.list.find(subItem => subItem.id === id)) {
+    while (list.find(subItem => subItem.id === id)) {
         id += 1;
     }
     return id;
